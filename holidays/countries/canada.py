@@ -61,19 +61,8 @@ class Canada(HolidayBase):
         if year >= 1867:
             name = "New Year's Day"
             self[date(year, JAN, 1)] = name
-            if self.observed and date(year, JAN, 1).weekday() == SUN:
-                self[date(year, JAN, 1) + rd(days=+1)] = name + " (Observed)"
-            elif self.observed and date(year, JAN, 1).weekday() == SAT:
-                # Add Dec 31st from the previous year without triggering
-                # the entire year to be added
-                expand = self.expand
-                self.expand = False
-                self[date(year, JAN, 1) + rd(days=-1)] = name + " (Observed)"
-                self.expand = expand
-            # The next year's observed New Year's Day can be in this year
-            # when it falls on a Friday (Jan 1st is a Saturday)
-            if self.observed and date(year, DEC, 31).weekday() == FRI:
-                self[date(year, DEC, 31)] = name + " (Observed)"
+            if self.observed and date(year, JAN, 1).weekday() in WEEKEND:
+                self[date(year, JAN, 1) + rd(weekday=MO)] = name + " (Observed)"
 
         # Family Day / Louis Riel Day (MB) / Islander Day (PE)
         # / Heritage Day (NS, YT)
@@ -257,22 +246,17 @@ class Canada(HolidayBase):
 
         # Christmas Day
         if year >= 1867:
-            self[date(year, DEC, 25)] = "Christmas Day"
-            if self.observed and date(year, DEC, 25).weekday() == SAT:
-                self[date(year, DEC, 24)] = "Christmas Day (Observed)"
-            elif self.observed and date(year, DEC, 25).weekday() == SUN:
-                self[date(year, DEC, 26)] = "Christmas Day (Observed)"
+            name = "Christmas Day"
+            self[date(year, DEC, 25)] = name
+            if self.observed and date(year, DEC, 25).weekday() in WEEKEND:
+                self[date(year, DEC, 27)] = name + " (Observed)"
 
         # Boxing Day
         if year >= 1867:
             name = "Boxing Day"
-            name_observed = name + " (Observed)"
+            self[date(year, DEC, 26)] = name
             if self.observed and date(year, DEC, 26).weekday() in WEEKEND:
-                self[date(year, DEC, 26) + rd(weekday=MO)] = name_observed
-            elif self.observed and date(year, DEC, 26).weekday() == 0:
-                self[date(year, DEC, 27)] = name_observed
-            else:
-                self[date(year, DEC, 26)] = name
+                self[date(year, DEC, 28)] = name + " (Observed)"
 
 
 class CA(Canada):
